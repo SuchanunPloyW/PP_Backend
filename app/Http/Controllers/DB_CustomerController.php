@@ -154,6 +154,77 @@ class DB_CustomerController extends Controller
             return $error;
         }
     }
+
+    //update customer
+    public function update(Request $request, $id)
+    {
+        $login_chk = $request->user();
+        $login_chk = $login_chk->status;
+
+        //! check permission
+        //TODO: Leader
+        if ($login_chk == 'leader') {
+            $fields = $request->validate([
+                'first_name' => 'required',
+                'last_name' => 'required',
+                'serial_no' => 'required',
+                'car' => 'required',
+                'grade_car' => 'required',
+                'color_car' => 'required | integer',
+                'campaign' => 'required',
+                'text' => 'required',
+                'deliver' => 'required | integer',
+                'postal_number' => 'required',
+                'parent' => 'required | integer',
+                'status' => 'required',
+                'read_page' => 'required',
+                'datetime' => 'required',
+            ]);
+            $customer = DB_CustomerModel::find($id);
+            $customer->update([
+                'first_name' => $fields['first_name'],
+                'last_name' => $fields['last_name'],
+                'serial_no' => $fields['serial_no'],
+                'car' => $fields['car'],
+                'grade_car' => $fields['grade_car'],
+                'color_car' => $fields['color_car'],
+                'campaign' => $fields['campaign'],
+                'text' => $fields['text'],
+                'deliver' => $fields['deliver'],
+                'postal_number' => $fields['postal_number'],
+                'parent' => $fields['parent'],
+                'status' => $fields['status'],
+                'read_page' => $fields['read_page'],
+                'datetime' => $fields['datetime'],
+            ]);
+            return response()->json([
+                'message' => 'success'
+            ], 200);
+        } else if ($login_chk == 'user') {
+            //TODO: User
+            $fields = $request->validate([
+                'car' => 'required',
+                'serial_no' => 'required',
+                'grade_car' => 'required',
+                'color_car' => 'required | integer',
+                'campaign' => 'required',
+            ]);
+            $customer = DB_CustomerModel::find($id);
+            $customer->update([
+                'car' => $fields['car'],
+                'serial_no' => $fields['serial_no'],
+                'grade_car' => $fields['grade_car'],
+                'color_car' => $fields['color_car'],
+                'campaign' => $fields['campaign'],
+            ]);
+            return response()->json([
+                'message' => 'success'
+            ], 200);
+        } else {
+            $error = error_res();
+            return $error;
+        }
+    }
 }
 
 
