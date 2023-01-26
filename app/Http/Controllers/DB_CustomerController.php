@@ -92,6 +92,68 @@ class DB_CustomerController extends Controller
             return $error;
         }
     }
+
+    public function store(Request $request)
+    {
+        $login_chk = $request->user();
+        $login_chk = $login_chk->status;
+        $login_id = $request->user();
+        $login_id = $login_id->id;
+        //decode 
+        $login_id = json_decode($login_id);
+
+        // ตรวจสอบสิทธิ์การเข้าถึง
+        if ($login_chk == 'user') {
+            $fields = $request->validate([
+                'first_name' => 'required',
+                'last_name' => 'required',
+                'serial_no' => 'required',
+                'car' => 'required',
+                'grade_car' => 'required',
+                'color_car' => 'required | integer',
+                'campaign' => 'required',
+                'text' => 'required',
+                'deliver' => 'required | integer',
+                'postal_number' => 'required',
+                'parent' => 'required | integer',
+                'status' => 'required',
+                'read_page' => 'required',
+                'datetime' => 'required',
+            ]);
+            $customer = DB_CustomerModel::create([
+                'first_name' => $fields['first_name'],
+                'last_name' => $fields['last_name'],
+                'serial_no' => $fields['serial_no'],
+                'car' => $fields['car'],
+                'grade_car' => $fields['grade_car'],
+                'color_car' => $fields['color_car'],
+                'campaign' => $fields['campaign'],
+                'text' => $fields['text'],
+                'deliver' => $fields['deliver'],
+                'postal_number' => $fields['postal_number'],
+                'parent' => $login_id,
+                'status' => $fields['status'],
+                'read_page' => $fields['read_page'],
+                'datetime' => $fields['datetime'],
+            ]);
+            //create tran
+            $tran = DB_TranModel::create([
+                'parent' => $customer->id,
+                'detail' => 'create customer by api test',
+                'datetime' => $fields['datetime'],
+            ]);
+            //response
+            return response()->json([
+                'message' => 'success',
+                'data' => $customer,
+                'tran' => $tran
+
+            ], 201);
+        } else {
+            $error = error_res();
+            return $error;
+        }
+    }
 }
 
 
