@@ -8,6 +8,7 @@ use App\Models\DB_CustomerModel;
 use App\Models\DB_CampaignModel;
 use App\Models\DB_TranModel;
 use App\Models\DB_user_groupModel;
+use App\Models\DB_MemorandumModel;
 use App\Models\User;
 
 class DB_CustomerController extends Controller
@@ -66,11 +67,11 @@ class DB_CustomerController extends Controller
             }
         } else if ($login_chk == 'admin') {
             if ($user_id == $login_chk_id && $login_branch == '1') {
-                // admin can see all customer in all branch
+                // admin can see all customer in db_customer
                 $customer = DB_CustomerModel::with('car')
                     ->with('color_car')
                     ->with('grade_car')
-                    ->get();
+                    ->paginate(100);
                 $customer_rs = loop_campaign($customer);
                 return $customer_rs;
             } else {
@@ -91,6 +92,13 @@ class DB_CustomerController extends Controller
             $error = error_res();
             return $error;
         }
+    }
+
+    public function get_customer_memo()
+    {
+        $memorandum = DB_MemorandumModel::with('customer')
+            ->get();
+        return $memorandum;
     }
 
     public function store(Request $request)
@@ -149,6 +157,8 @@ class DB_CustomerController extends Controller
                 'tran' => $tran
 
             ], 201);
+        } else if ($login_chk == 'admin') {
+            //
         } else {
             $error = error_res();
             return $error;
@@ -225,24 +235,26 @@ class DB_CustomerController extends Controller
             return $error;
         }
     }
+
+    //post upload doc
+    public function upload_doc(Request $request, $id)
+    {
+        $login_chk = $request->user();
+        $login_chk = $login_chk->status;
+        $login_id = $request->user();
+        $login_id = $login_id->id;
+        if ($login_chk == 'user') {
+            $fields = $request->validate([
+                'detail' => 'required',
+                'parent' => 'required',
+                'status' => 'required',
+                'datetime' => 'required',
+            ]);
+            //create 
+
+        }
+    }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 //! Function
 function loop_campaign($customer)
 {
