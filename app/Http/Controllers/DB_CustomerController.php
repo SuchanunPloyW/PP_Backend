@@ -4,11 +4,15 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\CreateDocRequest;
 use App\Models\DB_CustomerModel;
 use App\Models\DB_CampaignModel;
 use App\Models\DB_TranModel;
 use App\Models\DB_user_groupModel;
 use App\Models\DB_MemorandumModel;
+use App\Models\DB_DocscumentModel;
+
+
 use App\Models\User;
 
 class DB_CustomerController extends Controller
@@ -236,23 +240,35 @@ class DB_CustomerController extends Controller
         }
     }
 
-    //post upload doc
-    public function upload_doc(Request $request, $id)
+    //upload document
+    public function upload_doc(Request $request)
     {
-        $login_chk = $request->user();
-        $login_chk = $login_chk->status;
-        $login_id = $request->user();
-        $login_id = $login_id->id;
-        if ($login_chk == 'user') {
-            $fields = $request->validate([
-                'detail' => 'required',
-                'parent' => 'required',
-                'status' => 'required',
-                'datetime' => 'required',
-            ]);
-            //create 
-
+        $fields = $request->validate([
+            'docs' => 'present |array',
+            'docs.*.multiple_pic' => 'required ',
+            'docs.*.text' => 'required ',
+            'docs.*.type' => 'required ',
+            'docs.*.parent' => 'required ',
+            'docs.*.status' => 'required ',
+        ]);
+        $dateTimeNow = now();
+        $doc  = $fields['docs'];
+        $doc_data = [];
+        foreach ($doc as $key => $value) {
+            $doc_data[] = [
+                'parent' => $doc[$key]['parent'],
+                'multiple_pic' => $doc[$key]['multiple_pic'],
+                'text' => $doc[$key]['text'],
+                'type' => $doc[$key]['type'],
+                'status' => $doc[$key]['status'],
+                'date' => $dateTimeNow,
+            ];
         }
+        $doc = DB_DocscumentModel::insert($doc_data);
+        return response()->json([
+            'message' => 'success',
+            'data' => $doc_data
+        ], 200);
     }
 }
 //! Function
