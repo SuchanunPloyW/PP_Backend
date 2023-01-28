@@ -243,32 +243,40 @@ class DB_CustomerController extends Controller
     //upload document
     public function upload_doc(Request $request)
     {
-        $fields = $request->validate([
-            'docs' => 'present |array',
-            'docs.*.multiple_pic' => 'required ',
-            'docs.*.text' => 'required ',
-            'docs.*.type' => 'required ',
-            'docs.*.parent' => 'required ',
-            'docs.*.status' => 'required ',
-        ]);
-        $dateTimeNow = now();
-        $doc  = $fields['docs'];
-        $doc_data = [];
-        foreach ($doc as $key => $value) {
-            $doc_data[] = [
-                'parent' => $doc[$key]['parent'],
-                'multiple_pic' => $doc[$key]['multiple_pic'],
-                'text' => $doc[$key]['text'],
-                'type' => $doc[$key]['type'],
-                'status' => $doc[$key]['status'],
-                'date' => $dateTimeNow,
-            ];
+        $login_chk = $request->user();
+        $login_chk = $login_chk->status;
+
+        if ($login_chk == 'user') {
+            $fields = $request->validate([
+                'docs' => 'present |array',
+                'docs.*.multiple_pic' => 'required ',
+                'docs.*.text' => 'required ',
+                'docs.*.type' => 'required ',
+                'docs.*.parent' => 'required ',
+                'docs.*.status' => 'required ',
+            ]);
+            $dateTimeNow = now();
+            $doc  = $fields['docs'];
+            $doc_data = [];
+            foreach ($doc as $key => $value) {
+                $doc_data[] = [
+                    'parent' => $doc[$key]['parent'],
+                    'multiple_pic' => $doc[$key]['multiple_pic'],
+                    'text' => $doc[$key]['text'],
+                    'type' => $doc[$key]['type'],
+                    'status' => $doc[$key]['status'],
+                    'date' => $dateTimeNow,
+                ];
+            }
+            $doc = DB_DocscumentModel::insert($doc_data);
+            return response()->json([
+                'message' => 'success',
+                'data' => $doc_data
+            ], 200);
+        } else {
+            $error = error_res();
+            return $error;
         }
-        $doc = DB_DocscumentModel::insert($doc_data);
-        return response()->json([
-            'message' => 'success',
-            'data' => $doc_data
-        ], 200);
     }
 }
 //! Function

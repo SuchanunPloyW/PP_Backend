@@ -18,7 +18,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     //! <--------- customer ---------->
     Route::resource('customer', DB_CustomerController::class);
     Route::post('customer/uid', [DB_CustomerController::class, 'get_customer']);
+    Route::post('/doc/post', [DB_CustomerController::class, 'upload_doc']);
 });
 
 Route::get('/memo', [DB_CustomerController::class, 'get_customer_memo']);
-Route::post('/doc/post', [DB_CustomerController::class, 'upload_doc']);
