@@ -5,6 +5,8 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DB_CustomerController;
 
 
+
+
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
@@ -19,3 +21,4 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 });
 
 Route::get('/memo', [DB_CustomerController::class, 'get_customer_memo']);
+Route::post('/doc/post', [DB_CustomerController::class, 'upload_doc']);
