@@ -245,6 +245,8 @@ class DB_CustomerController extends Controller
     {
         $login_chk = $request->user();
         $login_chk = $login_chk->status;
+        $login_id = $request->user();
+        $login_id = $login_id->id;
 
         if ($login_chk == 'user') {
             $fields = $request->validate([
@@ -252,15 +254,17 @@ class DB_CustomerController extends Controller
                 'docs.*.multiple_pic' => 'required ',
                 'docs.*.text' => 'required ',
                 'docs.*.type' => 'required ',
-                'docs.*.parent' => 'required ',
                 'docs.*.status' => 'required ',
             ]);
-            $dateTimeNow = now();
+            $date = date('Y-m-d H:i:s');
+            $time = strtotime($date);
+            $time = $time + 25200;
+            $dateTimeNow = date('Y-m-d H:i:s', $time);
             $doc  = $fields['docs'];
             $doc_data = [];
             foreach ($doc as $key => $value) {
                 $doc_data[] = [
-                    'parent' => $doc[$key]['parent'],
+                    'parent' => $login_id,
                     'multiple_pic' => $doc[$key]['multiple_pic'],
                     'text' => $doc[$key]['text'],
                     'type' => $doc[$key]['type'],
