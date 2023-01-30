@@ -155,23 +155,6 @@ class DB_CustomerController extends Controller
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 //! Function
 function loop_campaign($customer)
 {
