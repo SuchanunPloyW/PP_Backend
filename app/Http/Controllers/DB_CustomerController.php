@@ -111,8 +111,6 @@ class DB_CustomerController extends Controller
         $login_chk = $login_chk->status;
         $login_id = $request->user();
         $login_id = $login_id->id;
-        //decode 
-        $login_id = json_decode($login_id);
 
         // ตรวจสอบสิทธิ์การเข้าถึง
         if ($login_chk == 'user') {
@@ -127,11 +125,13 @@ class DB_CustomerController extends Controller
                 'text' => 'required',
                 'deliver' => 'required | integer',
                 'postal_number' => 'required',
-                'parent' => 'required | integer',
                 'status' => 'required',
                 'read_page' => 'required',
-                'datetime' => 'required',
             ]);
+            $date = date('Y-m-d H:i:s');
+            $time = strtotime($date);
+            $time = $time + 25200;
+            $dateTimeNow = date('Y-m-d H:i:s', $time);
             $customer = DB_CustomerModel::create([
                 'first_name' => $fields['first_name'],
                 'last_name' => $fields['last_name'],
@@ -146,13 +146,13 @@ class DB_CustomerController extends Controller
                 'parent' => $login_id,
                 'status' => $fields['status'],
                 'read_page' => $fields['read_page'],
-                'datetime' => $fields['datetime'],
+                'datetime' => $dateTimeNow,
             ]);
             //create tran
             $tran = DB_TranModel::create([
                 'parent' => $customer->id,
                 'detail' => 'create customer by api test',
-                'datetime' => $fields['datetime'],
+                'datetime' => $dateTimeNow,
             ]);
             //response
             return response()->json([
