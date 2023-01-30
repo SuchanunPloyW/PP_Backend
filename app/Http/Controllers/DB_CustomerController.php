@@ -159,7 +159,6 @@ class DB_CustomerController extends Controller
                 'message' => 'success',
                 'data' => $customer,
                 'tran' => $tran
-
             ], 201);
         } else if ($login_chk == 'admin') {
             //
